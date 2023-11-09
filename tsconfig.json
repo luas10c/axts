@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+
+    "skipLibCheck": true,
+
+    "target": "es2021",
+    "module": "es2022",
+    "moduleResolution": "node",
+
+    "esModuleInterop": true,
+
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}
