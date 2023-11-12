@@ -8,7 +8,7 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc --project tsconfig.build.json && tsc-alias --project tsconfig.build.json && sudo npm unlink axts && sudo npm link axts",
+    "build": "tsc --project tsconfig.build.json && tsc-alias --project tsconfig.build.json",
     "lint": "eslint . --config .eslintrc.cjs",
     "test": "jest",
     "type:checking": "tsc --project tsconfig.json",
