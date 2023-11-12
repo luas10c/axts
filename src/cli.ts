@@ -9,6 +9,7 @@ import { program } from 'commander'
 import { emoji } from './utils/emoji.js'
 import { store } from './utils/store.js'
 import { terminal } from './utils/terminal.js'
+import { config } from './utils/config.js'
 
 import { swc } from './builders/swc.js'
 
@@ -36,7 +37,7 @@ async function* scan(
     if (info.isDirectory()) {
       yield {
         type: 'folder',
-        path: item
+        path: path.join(pathname, item)
       }
 
       yield* scan(path.join(pathname, item), extension)
@@ -48,13 +49,13 @@ async function* scan(
 
     yield {
       type: 'file',
-      path: path.join(pathname, item).replace(path.join(store.config.baseURL, '/'), '')
+      path: path.join(pathname, item)
     }
   }
 }
 
 async function handler(args: Args) {
-  const entry = program.args.at(0)!
+  const entry = program.args.splice(0).join()
   if (!entry) {
     throw new Error('Entrypoint not found')
   }
@@ -67,7 +68,11 @@ async function handler(args: Args) {
 
     process.env['NODE_ENV'] = 'development'
 
-    store.config.baseURL = path.resolve(process.cwd())
+    store.config.baseURL = process.cwd()
+    store.config.entrypoint.path = entry.split('/').slice(0, -1).join()
+    store.config.entrypoint.filename = entry.split('/').at(-1)!
+
+    await config.load()
 
     await rm(path.join(store.config.baseURL, 'dist'), {
       recursive: true,
@@ -76,10 +81,10 @@ async function handler(args: Args) {
 
     await mkdir(path.join(store.config.baseURL, 'dist'))
 
-    const pathname = path.join(store.config.baseURL, working)
-    for await (const item of scan(pathname, '.ts')) {
+    const { dir, ext } = path.parse(path.resolve(store.config.baseURL, entry))
+    for await (const item of scan(dir, ext)) {
       if (item.type === 'folder') {
-        await mkdir(path.join(store.config.baseURL, 'dist', item.path))
+        await mkdir(path.join(store.config.baseURL, 'dist', item.path.replace(dir, '')))
         continue
       }
 
@@ -100,7 +105,7 @@ async function handler(args: Args) {
     const end = performance.now()
 
     console.log(`\x1b[32m${emoji.get('check')} Compiled sucessfully!\x1b[0m`)
-    console.log(`  \x1b[32mReady ${Math.round(end - start)}ms\x1b[0m`)
+    console.log(`  \x1b[32mReady ${(end - start).toFixed(2)}ms\x1b[0m`)
   } catch (error) {
     console.log(`\x1b[31m${emoji.get('close')} Failed to compile\x1b[0m`)
     console.log(error)
@@ -135,7 +140,7 @@ async function handler(args: Args) {
 
       const end = performance.now()
       console.log(`\x1b[32m${emoji.get('check')} Compiled sucessfully!\x1b[0m`)
-      console.log(`  \x1b[32mReady ${Math.round(end - start)}ms\x1b[0m`)
+      console.log(`  \x1b[32mReady ${(end - start).toFixed(2)}ms\x1b[0m`)
     } catch (error) {
       console.log(`\x1b[31m${emoji.get('close')} Failed to compile\x1b[0m`)
       console.log(error)
