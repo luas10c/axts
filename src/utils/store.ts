@@ -1,17 +1,19 @@
+import type { Config } from '#/types/cli.js'
+
 const pids = new Set<number>(null)
 
-const config = Object.seal({
+const config = Object.seal<Config>({
   baseURL: '',
   entrypoint: {
-    filename: '',
-    extension: ''
+    path: '',
+    filename: ''
   },
   swc: {
     jsc: {
+      baseUrl: '.',
       parser: {
-        syntax: 'typescript',
-        decorators: false,
-        tsx: false
+        syntax: 'ecmascript',
+        decorators: false
       },
       target: 'es2021'
     },
