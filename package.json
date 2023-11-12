@@ -1,14 +1,14 @@
 {
   "name": "axts",
-  "description": "CLI command (alternative to node) for seamlessly running TypeScript & ESM, in both commonjs & module package types.",
-  "version": "0.0.1",
+  "description": "⚡️ Transpile and run very fast Typescript & ESM",
+  "version": "0.1.0",
   "type": "module",
   "bin": {
     "axts": "./dist/cli.js"
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc --project tsconfig.build.json && tsc-alias --project tsconfig.build.json",
+    "build": "tsc --project tsconfig.build.json && tsc-alias --project tsconfig.build.json && sudo npm unlink axts && sudo npm link axts",
     "lint": "eslint . --config .eslintrc.cjs",
     "test": "jest",
     "type:checking": "tsc --project tsconfig.json",
@@ -42,8 +42,12 @@
     "node": "^18.12.0 || ^20.9.0"
   },
   "keywords": [
+    "cli",
+    "node",
     "typescript",
-    "watch"
+    "runtime",
+    "watch",
+    "esm"
   ],
   "author": {
     "name": "Luciano Alves",
