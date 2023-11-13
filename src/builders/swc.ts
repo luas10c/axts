@@ -13,12 +13,16 @@ async function build(item: string) {
       .replace(/^(?:\/\/?)/, '')
   )
 
-  const { code } = await transformFile(
+  const { code, map } = await transformFile(
     path.join(store.config.baseURL, store.config.entrypoint.path, dir, base),
     store.config.swc
   )
 
   await writeFile(path.join(store.config.baseURL, 'dist', dir, `${name}.js`), code)
+
+  if (store.config.swc.sourceMaps && map) {
+    await writeFile(path.join(store.config.baseURL, 'dist', dir, `${name}.js.map`), map)
+  }
 }
 
 export const swc = {
