@@ -12,7 +12,7 @@ const config = Object.seal<Config>({
     jsc: {
       baseUrl: process.cwd(),
       parser: {
-        syntax: 'ecmascript',
+        syntax: 'typescript',
         decorators: false
       },
       target: 'es2021'
