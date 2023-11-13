@@ -8,12 +8,18 @@ import type { SwcOptions } from '#/types/cli.js'
 function parse(config: SwcOptions) {
   store.config.swc = {
     ...store.config.swc,
-    ...config,
-    jsc: {
-      ...config.jsc,
-      baseUrl: path.join(store.config.baseURL, config.jsc?.baseUrl ?? '.')
-    }
+    ...config
   }
+
+  if (config.jsc?.baseUrl) {
+    store.config.swc.jsc.baseUrl = path.join(store.config.baseURL, '.')
+    return
+  }
+
+  store.config.swc.jsc.baseUrl = path.join(
+    store.config.baseURL,
+    config.jsc.baseUrl as string
+  )
 }
 
 async function load(): Promise<void> {

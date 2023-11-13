@@ -10,7 +10,7 @@ const config = Object.seal<Config>({
   },
   swc: {
     jsc: {
-      baseUrl: '.',
+      baseUrl: process.cwd(),
       parser: {
         syntax: 'ecmascript',
         decorators: false
