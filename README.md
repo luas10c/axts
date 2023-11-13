@@ -33,7 +33,8 @@ There is a default configuration and as the file is represented below, you can c
   "module": {
     "strict": true,
     "type": "es6"
-  }
+  },
+  "sourceMaps": false
 }
 ```
 
