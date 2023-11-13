@@ -20,7 +20,8 @@ const config = Object.seal<Config>({
     module: {
       strict: true,
       type: 'es6'
-    }
+    },
+    sourceMaps: false
   }
 })
 
