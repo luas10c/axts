@@ -1,7 +1,7 @@
 {
   "name": "axts",
   "description": "⚡️ Transpile and run very fast Typescript & ESM",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "bin": {
     "axts": "./dist/cli.js"
