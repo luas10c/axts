@@ -15,7 +15,7 @@ export interface SwcOptions {
     strict: boolean
     type: 'es6' | 'commonjs'
   }
-  sourceMaps: boolean
+  sourceMaps: 'inline'
 }
 
 export interface Config {

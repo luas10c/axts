@@ -8,7 +8,8 @@ import type { SwcOptions } from '#/types/cli.js'
 function parse(config: SwcOptions) {
   store.config.swc = {
     ...store.config.swc,
-    ...config
+    ...config,
+    sourceMaps: 'inline'
   }
 
   if (config.jsc?.baseUrl) {

@@ -21,7 +21,7 @@ const config = Object.seal<Config>({
       strict: true,
       type: 'es6'
     },
-    sourceMaps: false
+    sourceMaps: 'inline'
   }
 })
 
