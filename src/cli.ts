@@ -99,7 +99,10 @@ async function handler(args: Args) {
       store.pids.delete(item)
     }
 
-    const { pid } = fork(path.join(store.config.baseURL, 'dist', `${entrypoint}.js`))
+    const { pid } = fork(path.join(store.config.baseURL, 'dist', `${entrypoint}.js`), {
+      stdio: 'inherit',
+      execArgv: ['--enable-source-maps']
+    })
     store.pids.add(pid!)
 
     const end = performance.now()
@@ -135,7 +138,10 @@ async function handler(args: Args) {
         store.pids.delete(item)
       }
 
-      const { pid } = fork(path.join(store.config.baseURL, 'dist', `${entrypoint}.js`))
+      const { pid } = fork(path.join(store.config.baseURL, 'dist', `${entrypoint}.js`), {
+        stdio: 'inherit',
+        execArgv: ['--enable-source-maps']
+      })
       store.pids.add(pid!)
 
       const end = performance.now()
