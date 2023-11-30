@@ -89,11 +89,14 @@ async function handler(args: Args) {
     })
 
     watcher.on('unlink', async function (pathname) {
-      const dirname = pathname
+      const filePathname = pathname
         .split(store.config.entrypoint.path)
         .join('dist')
         .replace('ts', 'js')
-      await rm(dirname)
+
+      await rm(filePathname, {
+        force: true
+      })
     })
 
     watcher.on('change', async function (pathname) {
