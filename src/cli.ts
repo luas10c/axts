@@ -3,7 +3,7 @@
 import path from 'node:path'
 import chokidar from 'chokidar'
 import { fork } from 'node:child_process'
-import { readdir, mkdir, rm, stat } from 'node:fs/promises'
+import { cp, mkdir, rm } from 'node:fs/promises'
 import { program } from 'commander'
 
 import { emoji } from './utils/emoji.js'
@@ -20,40 +20,6 @@ program
   .description('CLI typescript builder')
   .option('-w, --watch', 'Watch directory', false)
 
-async function* scan(
-  pathname: string,
-  extension: string
-): AsyncGenerator<{ type: 'folder' | 'file'; path: string }> {
-  const folders = await readdir(pathname)
-
-  const extensions = [extension, '.json']
-
-  for (const item of folders) {
-    if (pathname.match(/(?:node_modules|dist|tests|__tests__|^\..+)/)) {
-      continue
-    }
-
-    const info = await stat(path.join(pathname, item))
-    if (info.isDirectory()) {
-      yield {
-        type: 'folder',
-        path: path.join(pathname, item)
-      }
-
-      yield* scan(path.join(pathname, item), extension)
-    }
-
-    if (!extensions.includes(path.extname(item))) {
-      continue
-    }
-
-    yield {
-      type: 'file',
-      path: path.join(pathname, item)
-    }
-  }
-}
-
 async function handler(args: Args) {
   const entry = program.args.splice(0).join()
   if (!entry) {
@@ -64,8 +30,6 @@ async function handler(args: Args) {
   const working = entry.split('/').slice(0, -1).join('/')
 
   try {
-    const start = performance.now()
-
     process.env['NODE_ENV'] = 'development'
 
     store.config.baseURL = process.cwd()
@@ -81,54 +45,76 @@ async function handler(args: Args) {
 
     await mkdir(path.join(store.config.baseURL, 'dist'))
 
-    const { dir, ext } = path.parse(path.resolve(store.config.baseURL, entry))
-    for await (const item of scan(dir, ext)) {
-      if (item.type === 'folder') {
-        await mkdir(path.join(store.config.baseURL, 'dist', item.path.replace(dir, '')))
-        continue
+    if (!args.watch) {
+      return
+    }
+
+    const watcher = chokidar.watch(path.join(store.config.baseURL, working), {
+      ignored: /node_modules|dist/,
+      persistent: true
+    })
+
+    watcher.on('addDir', async function (pathname) {
+      const dirname = pathname.split(store.config.entrypoint.path).join('dist')
+      if (path.resolve(store.config.baseURL, 'dist') === dirname) {
+        return
       }
 
-      await swc.build(item.path)
-    }
-
-    for (const item of store.pids.values()) {
-      try {
-        process.kill(item)
-      } catch {}
-
-      store.pids.delete(item)
-    }
-
-    const { pid } = fork(path.join(store.config.baseURL, 'dist', `${entrypoint}.js`), {
-      stdio: 'inherit',
-      execArgv: ['--enable-source-maps']
+      await mkdir(dirname)
     })
-    store.pids.add(pid!)
 
-    const end = performance.now()
+    const start = performance.now()
 
-    console.log(`\x1b[32m${emoji.get('check')} Compiled sucessfully!\x1b[0m`)
-    console.log(`  \x1b[32mReady ${(end - start).toFixed(2)}ms\x1b[0m`)
-  } catch (error) {
-    console.log(`\x1b[31m${emoji.get('close')} Failed to compile\x1b[0m`)
-    console.log(error)
-  }
+    watcher.on('add', async function (pathname) {
+      try {
+        if (!path.extname(pathname).match(/(js|ts)/)) {
+          // Watch assets
+          await cp(pathname, pathname.split(store.config.entrypoint.path).join('dist'))
+          return
+        }
 
-  if (!args.watch) {
-    return
-  }
+        await swc.build(pathname)
+      } catch (error) {
+        console.log(`\x1b[31m${emoji.get('close')} Failed to compile\x1b[0m`)
+        console.log(error)
+      }
+    })
 
-  const watcher = chokidar.watch(path.join(store.config.baseURL, working), {
-    ignored: /node_modules|dist/,
-    persistent: true
-  })
+    watcher.on('unlinkDir', async function (pathname) {
+      const dirname = pathname.split(store.config.entrypoint.path).join('dist')
+      await rm(dirname, {
+        force: true,
+        recursive: true
+      })
+    })
 
-  async function update(filename: string) {
-    try {
-      const start = performance.now()
+    watcher.on('unlink', async function (pathname) {
+      const dirname = pathname
+        .split(store.config.entrypoint.path)
+        .join('dist')
+        .replace('ts', 'js')
+      await rm(dirname)
+    })
+
+    watcher.on('change', async function (pathname) {
       terminal.clear()
 
-      await swc.build(filename.replace(path.join(store.config.baseURL, '/'), ''))
+      const start = performance.now()
+
+      try {
+        if (!path.extname(pathname).match(/(js|ts)/)) {
+          // Watch assets
+          await cp(pathname, pathname.split(store.config.entrypoint.path).join('dist'))
+          return
+        }
+
+        await swc.build(pathname)
+      } catch (error) {
+        console.log(`\x1b[31m${emoji.get('close')} Failed to compile\x1b[0m`)
+        console.log(error)
+      }
+
+      const end = performance.now()
 
       for (const item of store.pids.values()) {
         try {
@@ -144,16 +130,38 @@ async function handler(args: Args) {
       })
       store.pids.add(pid!)
 
-      const end = performance.now()
       console.log(`\x1b[32m${emoji.get('check')} Compiled sucessfully!\x1b[0m`)
       console.log(`  \x1b[32mReady ${(end - start).toFixed(2)}ms\x1b[0m`)
-    } catch (error) {
+    })
+
+    watcher.on('error', (error) => {
       console.log(`\x1b[31m${emoji.get('close')} Failed to compile\x1b[0m`)
       console.log(error)
-    }
-  }
+    })
 
-  watcher.on('change', update)
+    watcher.on('ready', function () {
+      const end = performance.now()
+
+      for (const item of store.pids.values()) {
+        try {
+          process.kill(item)
+        } catch {}
+
+        store.pids.delete(item)
+      }
+
+      const { pid } = fork(path.join(store.config.baseURL, 'dist', `${entrypoint}.js`), {
+        stdio: 'inherit',
+        execArgv: ['--enable-source-maps']
+      })
+      store.pids.add(pid!)
+
+      console.log(`\x1b[32m${emoji.get('check')} Compiled sucessfully!\x1b[0m`)
+      console.log(`  \x1b[32mReady ${(end - start).toFixed(2)}ms\x1b[0m`)
+    })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 program.action(handler)
