@@ -17,31 +17,11 @@ CLI command (alternative to node) for seamlessly running TypeScript & ESM, in bo
 $ npm install axts -D
 ```
 
-There is a default configuration and as the file is represented below, you can create a **".swcrc"** file to extend the configurations
-
-```json
-{
-  "$schema": "https://json.schemastore.org/swcrc",
-  "jsc": {
-    "baseUrl": ".",
-    "parser": {
-      "syntax": "typescript",
-      "decorators": false
-    },
-    "target": "es2021"
-  },
-  "module": {
-    "strict": true,
-    "type": "es6"
-  }
-}
-```
-
 ### **Usage**
 ```bash
 $ axts src/main.ts
 # or with watch mode
-$ axts --watch src/main.ts
+$ axts --watch --extensions ts,json src/main.ts
 ```
 
 ### **Features**
