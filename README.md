@@ -22,7 +22,22 @@ $ npm install axts -D
 $ axts src/main.ts
 # or with watch mode
 $ axts --watch --extensions ts,json src/main.ts
+# you can also use it with commonjs
+$ axts --watch --commonjs --extensions ts,json src/main.ts
 ```
+
+#### IMPORTANT
+When the --commonjs flag is missing.
+
+"type": "module" is required in your package.json
+```json
+{
+  ...
+  "type": "module",
+  ...
+}
+``````
+
 
 ### **Features**
 - Blazing fast on-demand TypeScript & ESM compilation
