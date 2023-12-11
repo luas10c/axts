@@ -10,6 +10,7 @@ interface Store {
     watch: boolean
     extensions: string[]
     ignore: (string | RegExp)[]
+    commonjs: boolean
   }
   swc: Options
 }
@@ -25,7 +26,8 @@ const entrypoint: string[] = []
 const cli = Object.seal({
   watch: false,
   extensions: ['ts', 'json'],
-  ignore: ['node_modules', 'dist']
+  ignore: [/(?:^|\/)\.\w+$/, /node_modules|dist|coverage/],
+  commonjs: false
 })
 
 const swc = Object.seal<Options>({
@@ -36,7 +38,6 @@ const swc = Object.seal<Options>({
     },
     target: 'es2021',
     keepClassNames: true,
-    preserveAllComments: false,
     loose: true
   },
   module: {
