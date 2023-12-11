@@ -84,8 +84,9 @@ async function build() {
     store.pids.add(pid as number)
 
     const end = performance.now()
-    console.log(`${time.ms(end - start)}`)
+    console.log(`\x1b[36m\x1b[1mINFO \x1b[0mReady to use in ${time.ms(end - start)}`)
   } catch (error) {
+    console.log(`\x1b[31m\x1b[1mFAILED \x1b[0m`)
     console.log(error)
   }
 }
@@ -143,25 +144,31 @@ async function watch() {
       const end = performance.now()
       console.log(`${time.ms(end - start)}`)
     } catch (error) {
+      console.log(`\x1b[31m\x1b[1mFAILED \x1b[0m`)
       console.log(error)
     }
   })
 
   watcher.on('add', async (arg) => {
-    const filename = arg.replace(
-      path.join(store.baseURL, store.entrypoint.at(0) as string),
-      ''
-    )
+    try {
+      const filename = arg.replace(
+        path.join(store.baseURL, store.entrypoint.at(0) as string),
+        ''
+      )
 
-    const extension = path.extname(filename)
-    if (extension === '.ts') {
-      await swc.build(filename)
-      return
+      const extension = path.extname(filename)
+      if (extension === '.ts') {
+        await swc.build(filename)
+        return
+      }
+
+      await cp(arg, path.join(store.baseURL, 'dist', filename.replace('.ts', '.js')), {
+        force: true
+      })
+    } catch (error) {
+      console.log(`\x1b[31m\x1b[1mFAILED \x1b[0m`)
+      console.log(error)
     }
-
-    await cp(arg, path.join(store.baseURL, 'dist', filename.replace('.ts', '.js')), {
-      force: true
-    })
   })
 
   watcher.on('unlink', async (arg) => {
