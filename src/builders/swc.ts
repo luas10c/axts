@@ -22,6 +22,15 @@ async function config() {
     if (compilerOptions?.paths) {
       store.swc.jsc!.paths = compilerOptions.paths
     }
+
+    if (compilerOptions?.experimentalDecorators) {
+      store.swc.jsc!.parser!.decorators = true
+    }
+
+    if (compilerOptions?.emitDecoratorMetadata) {
+      store.swc.jsc!.transform!.decoratorMetadata = true
+      store.swc.jsc!.transform!.legacyDecorator = true
+    }
   } catch {}
 
   if (store.cli.commonjs) {
