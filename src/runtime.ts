@@ -28,8 +28,6 @@ async function* scan(): AsyncGenerator<string> {
       continue
     }
 
-    console.log(filename)
-
     yield filename
   }
 }
