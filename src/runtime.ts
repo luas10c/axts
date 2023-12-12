@@ -34,8 +34,6 @@ async function* scan(): AsyncGenerator<string> {
 
 async function build() {
   try {
-    const start = performance.now()
-
     await rm(path.join(store.baseURL, 'dist'), {
       recursive: true,
       force: true
@@ -43,6 +41,8 @@ async function build() {
 
     await mkdir(path.join(store.baseURL, 'dist'))
 
+    const start = performance.now()
+    let totalFiles = 0
     for await (const filename of scan()) {
       const sts = await stat(
         path.join(store.baseURL, store.entrypoint.at(0) as string, filename)
@@ -55,6 +55,7 @@ async function build() {
       const extension = path.extname(filename)
       if (extension === '.ts') {
         await swc.build(filename)
+        totalFiles += 1
         continue
       }
 
@@ -62,6 +63,18 @@ async function build() {
         path.join(store.baseURL, store.entrypoint.at(0) as string, filename),
         path.join(store.baseURL, 'dist', filename)
       )
+    }
+
+    const end = performance.now()
+    console.log(
+      `\x1b[36m > \x1b[46m \x1b[37m\x1b[1mSWC \x1b[0m \x1b[36mRunning...\x1b[0m`
+    )
+    console.log(
+      `Successfully compiled: ${totalFiles} files with swc (${time.ms(end - start)})`
+    )
+
+    if (store.cli.watch) {
+      console.log('Watching for file changes.')
     }
 
     for (const item of store.pids.values()) {
@@ -82,11 +95,7 @@ async function build() {
       }
     )
     store.pids.add(pid as number)
-
-    const end = performance.now()
-    console.log(`\x1b[36m\x1b[1mINFO \x1b[0mReady to use in ${time.ms(end - start)}`)
   } catch (error) {
-    console.log(`\x1b[31m\x1b[1mFAILED \x1b[0m`)
     console.log(error)
   }
 }
@@ -121,6 +130,13 @@ async function watch() {
           path.join(store.baseURL, 'dist', filename)
         )
       }
+      const end = performance.now()
+      console.log(
+        `Successfully compiled ${path.join(
+          store.entrypoint.at(0) as string,
+          filename
+        )} with swc (${time.ms(end - start)})`
+      )
 
       for (const item of store.pids.values()) {
         try {
@@ -140,11 +156,7 @@ async function watch() {
         }
       )
       store.pids.add(pid as number)
-
-      const end = performance.now()
-      console.log(`${time.ms(end - start)}`)
     } catch (error) {
-      console.log(`\x1b[31m\x1b[1mFAILED \x1b[0m`)
       console.log(error)
     }
   })
@@ -166,7 +178,6 @@ async function watch() {
         force: true
       })
     } catch (error) {
-      console.log(`\x1b[31m\x1b[1mFAILED \x1b[0m`)
       console.log(error)
     }
   })
@@ -181,7 +192,6 @@ async function watch() {
         force: true
       })
     } catch (error) {
-      console.log(`\x1b[31m\x1b[1mFAILED \x1b[0m`)
       console.log(error)
     }
   })
