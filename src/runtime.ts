@@ -172,13 +172,18 @@ async function watch() {
   })
 
   watcher.on('unlink', async (arg) => {
-    const filename = arg
-      .replace(path.join(store.baseURL, store.entrypoint.at(0) as string), '')
-      .replace('.ts', '.js')
+    try {
+      const filename = arg
+        .replace(path.join(store.baseURL, store.entrypoint.at(0) as string), '')
+        .replace('.ts', '.js')
 
-    await rm(path.join(store.baseURL, 'dist', filename), {
-      force: true
-    })
+      await rm(path.join(store.baseURL, 'dist', filename), {
+        force: true
+      })
+    } catch (error) {
+      console.log(`\x1b[31m\x1b[1mFAILED \x1b[0m`)
+      console.log(error)
+    }
   })
 }
 
