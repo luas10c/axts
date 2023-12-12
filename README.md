@@ -38,7 +38,6 @@ When the --commonjs flag is missing.
 }
 ``````
 
-
 ### **Features**
 - Blazing fast on-demand TypeScript & ESM compilation
 - Works in both CommonJS and ESM packages
