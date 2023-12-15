@@ -22,7 +22,13 @@ program
 async function handler(args: Args) {
   for (const [k, v] of Object.entries(args)) {
     if (k === 'extensions' && typeof v === 'string') {
-      store.cli.extensions = v.split(',')
+      store.cli.extensions = v.split(',').map((extension) => {
+        if (!extension.startsWith('.')) {
+          return `.${extension}`
+        }
+
+        return extension
+      })
       continue
     }
 
