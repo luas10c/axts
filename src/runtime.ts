@@ -124,19 +124,24 @@ async function watch() {
 
       if (extension === '.ts') {
         await swc.build(filename)
-      } else {
+        const end = performance.now()
+        console.log(
+          `Successfully compiled ${path.join(
+            store.entrypoint.at(0) as string,
+            filename
+          )} with swc (${time.ms(end - start)})`
+        )
+      }
+
+      if (extension !== '.ts' && store.cli.extensions.includes(extension)) {
+        console.log(
+          `Changed file: ${path.join(store.entrypoint.at(0) as string, filename)} `
+        )
         await cp(
           path.join(store.baseURL, store.entrypoint.at(0) as string, filename),
           path.join(store.baseURL, 'dist', filename)
         )
       }
-      const end = performance.now()
-      console.log(
-        `Successfully compiled ${path.join(
-          store.entrypoint.at(0) as string,
-          filename
-        )} with swc (${time.ms(end - start)})`
-      )
 
       for (const item of store.pids.values()) {
         try {
