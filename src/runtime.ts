@@ -116,7 +116,7 @@ async function watch() {
       const start = performance.now()
       const extension = path.extname(filename)
 
-      if (!store.cli.extensions.includes(extension.replace('.', ''))) {
+      if (!store.cli.extensions.includes(extension)) {
         return
       }
 
