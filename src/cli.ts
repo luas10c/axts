@@ -22,18 +22,22 @@ program
 async function handler(args: Args) {
   for (const [k, v] of Object.entries(args)) {
     if (k === 'extensions' && typeof v === 'string') {
-      store.cli.extensions = v.split(',').map((extension) => {
-        if (!extension.startsWith('.')) {
-          return `.${extension}`
-        }
-
-        return extension
-      })
+      store.cli.extensions = v.split(',')
       continue
     }
 
     store.cli[k as keyof typeof store.cli] = v
   }
+
+  store.cli.extensions = store.cli.extensions.map((extension) => {
+    if (!extension.startsWith('.')) {
+      return `.${extension}`
+    }
+
+    return extension
+  })
+
+  console.log(store.cli.extensions)
 
   const entrypoint = program.args.at(0)
   if (!entrypoint) {
