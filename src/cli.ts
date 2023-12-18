@@ -37,8 +37,6 @@ async function handler(args: Args) {
     return extension
   })
 
-  console.log(store.cli.extensions)
-
   const entrypoint = program.args.at(0)
   if (!entrypoint) {
     throw new Error('The entrypoint is required')
