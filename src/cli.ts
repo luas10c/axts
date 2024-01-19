@@ -12,7 +12,7 @@ interface Args {
   extensions: string | string[]
 }
 
-program.name('ayrts').description('Transpile and run very fast Typescript & ESM')
+program.name('axts').description('Transpile and run very fast Typescript & ESM')
 
 program
   .option('-w, --watch', 'Watch mode', false)
