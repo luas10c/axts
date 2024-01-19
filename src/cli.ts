@@ -36,9 +36,23 @@ async function handler(args: Args) {
     return extension
   })
 
-  const entrypoint = program.args.at(0)
+  const { entrypoint, nodeArgs } = program.args.reduce(
+    (obj, item) => {
+      if (item.match(/.+\.js|ts/)) {
+        obj.entrypoint = item
+      } else {
+        obj.nodeArgs = [...obj.nodeArgs, item]
+      }
+
+      return obj
+    },
+    { entrypoint: '', nodeArgs: [] as string[] }
+  )
+
+  store.cli.nodeArgs = nodeArgs
+
   if (!entrypoint) {
-    throw new Error('The entrypoint is required')
+    throw new Error('You did not provide an entrypoint.')
   }
 
   const entry = entrypoint.replaceAll(/\\/g, '/').split(/\/\/?/)

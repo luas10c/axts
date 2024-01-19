@@ -10,6 +10,7 @@ interface Store {
     watch: boolean
     extensions: string[]
     ignore: (string | RegExp)[]
+    nodeArgs: string[]
     commonjs: boolean
   }
   swc: Options
@@ -27,6 +28,7 @@ const cli = Object.seal({
   watch: false,
   extensions: ['ts', 'json'],
   ignore: [/(?:^|\/)\.\w+$/, /node_modules|dist|coverage/],
+  nodeArgs: [],
   commonjs: false
 })
 

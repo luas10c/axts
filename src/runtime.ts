@@ -91,7 +91,7 @@ async function build() {
         .replace('.ts', '.js'),
       {
         stdio: 'inherit',
-        execArgv: ['--enable-source-maps']
+        execArgv: ['--enable-source-maps', ...store.cli.nodeArgs]
       }
     )
     store.pids.add(pid as number)
@@ -157,7 +157,7 @@ async function watch() {
           .replace('.ts', '.js'),
         {
           stdio: 'inherit',
-          execArgv: ['--enable-source-maps']
+          execArgv: ['--enable-source-maps', ...store.cli.nodeArgs]
         }
       )
       store.pids.add(pid as number)
