@@ -8,6 +8,9 @@
 Transpile and run your typescript easily
 </p>
 
+<p>You can support the project:</p>
+<a href="https://www.buymeacoffee.com/luas10cw" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 192px !important;" ></a>
+
 ### **About**
 
 CLI command (alternative to node) for seamlessly running TypeScript & ESM, in both commonjs & module package types.
