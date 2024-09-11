@@ -1,0 +1,82 @@
+{
+  "name": "cli",
+  "description": "TypeScript at full throttle—fast, safe, unstoppable. 🚀",
+  "keywords": [
+    "cli",
+    "esm",
+    "watch",
+    "nodejs",
+    "typescript"
+  ],
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "cli": "dist/cli.js"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.build.json",
+    "postbuild": "tsc-alias -f -p tsconfig.build.json",
+    "lint": "eslint . --config eslint.config.js",
+    "test": "jest --passWithNoTests",
+    "test:ci": "jest --passWithNoTests --ci",
+    "test:watch": "jest --passWithNoTests --watch",
+    "test:watchAll": "jest --passWithNoTests --watchAll",
+    "test:coverage": "jest --passWithNoTests --coverage",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@swc/core": "^1.11.24",
+    "chokidar": "^4.0.3",
+    "commander": "^13.1.0",
+    "json5": "^2.2.3"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@eslint/js": "^9.26.0",
+    "@jest/globals": "^29.7.0",
+    "@swc/jest": "^0.2.38",
+    "@typescript-eslint/eslint-plugin": "^8.32.0",
+    "@typescript-eslint/parser": "^8.32.0",
+    "eslint": "^9.26.0",
+    "eslint-plugin-jest": "^28.11.0",
+    "eslint-plugin-prettier": "^5.4.0",
+    "globals": "^16.1.0",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
+    "jest-mock-extended": "^3.0.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.8.3"
+  },
+  "author": {
+    "name": "Luciano Alves",
+    "url": "https://github.com/luas10c"
+  },
+  "engines": {
+    "node": "^20.9.0 || ^22.11.0"
+  },
+  "homepage": "https://github.com/luas10c/axts",
+  "bugs": {
+    "url": "https://gitbub.com/luas10c/axts/issues"
+  },
+  "repository": {
+    "type": "github",
+    "url": "git+https://github.com/luas10c/axts.git"
+  },
+  "contributors": [
+    {
+      "name": "Luciano Alves",
+      "url": "https://www.npmjs.com/~luas10c"
+    },
+    {
+      "name": "Raphael Zolotorevsky",
+      "url": "https://www.npmjs.com/org/devzolo"
+    }
+  ],
+  "license": "UNLICENSED"
+}
