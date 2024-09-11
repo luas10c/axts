@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "node",
+
+    "esModuleInterop": true,
+    "resolveJsonModule": false,
+
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true
+  }
+}
