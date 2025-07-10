@@ -36,8 +36,6 @@ export async function transform(
     module: {
       type: 'es6',
       strict: true,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       resolveFully: true
     },
 
