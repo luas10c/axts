@@ -2,7 +2,9 @@ import { transformFile } from '@swc/core'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join, parse } from 'node:path'
 
-import { outDir } from '#/constants/config'
+import { loadTsConfigPaths, outDir } from '#/constants/config'
+
+const paths = await loadTsConfigPaths()
 
 export async function transform(
   filename: string,
@@ -28,9 +30,7 @@ export async function transform(
         keepImportAssertions: true
       },
 
-      paths: {
-        '#/*': ['./src/*']
-      }
+      paths
     },
 
     module: {
