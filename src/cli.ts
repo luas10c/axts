@@ -68,7 +68,7 @@ async function handler(): Promise<void> {
     )
 
     starts = performance.now()
-    console.log('options.sourceRoot', options.sourceRoot)
+    //console.log('options.sourceRoot', options.sourceRoot)
 
     for await (const filename of discover(options.sourceRoot)) {
       if (filename.endsWith('.ts')) {
@@ -77,7 +77,7 @@ async function handler(): Promise<void> {
       }
 
       if (options.includeAssets) {
-        console.log(join(process.cwd(), filename))
+        //console.log(join(process.cwd(), filename))
         await cp(
           join(process.cwd(), filename),
           join(
