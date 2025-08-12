@@ -9,11 +9,15 @@ export const { name, description, version } = JSON.parse(
 
 export const outDir = join(tmpdir(), name)
 
-export async function loadTsConfigPaths() {
-  const data = await readFile(join(process.cwd(), 'tsconfig.json'), 'utf-8')
-  const {
-    compilerOptions: { paths }
-  } = json5.parse(data)
+export async function loadTsConfigPaths(): Promise<Record<string, string[]>> {
+  try {
+    const data = await readFile(join(process.cwd(), 'tsconfig.json'), 'utf-8')
+    const {
+      compilerOptions: { paths }
+    } = json5.parse(data)
 
-  return paths
+    return paths
+  } catch {
+    return {}
+  }
 }
